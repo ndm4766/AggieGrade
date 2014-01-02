@@ -9,7 +9,7 @@ function heading($title = "NULL") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="img/favicon.png">
 
-    <title><?=NAME?> :: <?=$title?></title>
+    <title><?=NAME?> v<?=VERSION?> :: <?=$title?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
@@ -27,7 +27,7 @@ function heading($title = "NULL") {
 
 function footer() {
 ?>
-	<div id="footer">
+    <div id="footer">
         <footer>
             <p><?=NAME?> - Created by <a href="http://github.com/solewolf">Keith Armstrong</a>, <a href="http://github.com/ndm4766">Nick Melynk</a>, and <a href="https://github.com/Tvkwoodlands">Thomas Klingshirn</a></p>
             <p class="text-muted">Full source available on <a href='https://github.com/solewolf/AggieGrade/'>Github</a></p>
@@ -36,6 +36,12 @@ function footer() {
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+<?php
+}
+
+function logo() {
+?>
+    <a href="index.php"><img id="logo" src="img/tamu.png"></a>
 <?php
 }
 ?>
