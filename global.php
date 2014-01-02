@@ -1,6 +1,14 @@
 <?php
-define(NAME, "AggieGrade");
-define(VERSION, "0.1 Beta");
+session_start();
+
+# Configuration values
+require_once("config.php");
+
+function database() {
+    global $config;
+    $db = new PDO("mysql:host=localhost;port=3306;dbname=" . $config["db"]["dbname"], $config["db"]["username"], $config["db"]["password"]);
+    return $db;
+}
 
 function heading($title = "NULL") {
 ?>
@@ -43,5 +51,44 @@ function logo() {
 ?>
     <a href="index.php"><img id="logo" src="img/tamu.png"></a>
 <?php
+}
+
+function random($mode, $length) {
+    # RANDOM_DEFAULT
+    if ($mode == 1) {
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    }
+    # RANDOM_NUMERIC
+    if ($mode == 2) {
+        $chars = "1234567890";
+    }
+    # RANDOM_ALPHA
+    if ($mode == 3) {
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    }
+    # RANDOM_UPPER
+    if ($mode == 4) {
+        $chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    }
+    #RANDOM_LOWER
+    if ($mode == 5) {
+        $chars = "abcdefghijklmnopqrstuvwxyz";
+    }
+    # RANDOM_UPPERNUM
+    if ($mode == 6) {
+        $chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    }
+    # RANDOM_LOWERNUM
+    if ($mode == 7) {
+        $chars = "abcdefghijklmnopqrstuvwxyz1234567890";
+    }
+    # RANDOM_EVERYTHING
+    if ($mode == 8) {
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890~!@#$%^&*()_+-=`{}[]\\|;':\",.<>/?";
+    }
+
+    for ($i = 0; $i < $length; $i++)
+        $result.= $chars[rand(0, strlen($chars) - 1)];
+    return $result;
 }
 ?>
