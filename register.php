@@ -1,5 +1,9 @@
 <?php
 require_once("global.php");
+
+if ($_POST != null) {
+    echo validNetID($_POST['first'], $_POST['last'], $_POST['NetID']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,13 +16,11 @@ require_once("global.php");
             <form class="form-signin" role="form" action="register.php" method="POST">
                 <h2 class="form-signin-heading">Register to AggieGrade</h2>
                 <div class="form-group">
-                    <input type="text" class="form-control" name="uin" placeholder="UIN" maxlength="9" required autofocus>
+                    <input type="text" class="form-control" name="NetID" placeholder="NetID - This will be your username" required autofocus>
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control" name="key" placeholder="Enrollment Key" maxlength="5" required>
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" name="username" placeholder="Username" required>
+                    <input type="text" class="form-control" name="first" placeholder="First Name" required>
+                    <input type="text" class="form-control" name="last" placeholder="Last Name" required>
                 </div>
                 <div class="form-group">
                     <input type="password" class="form-control" name="password" placeholder="Password" required>
