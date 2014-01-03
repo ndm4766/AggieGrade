@@ -33,6 +33,12 @@ function heading($title = "NULL") {
 <?php
 }
 
+function logo() {
+?>
+    <a href="index.php"><img id="logo" src="img/tamu.png"></a>
+<?php
+}
+
 function footer() {
 ?>
     <div id="footer">
@@ -44,12 +50,6 @@ function footer() {
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-<?php
-}
-
-function logo() {
-?>
-    <a href="index.php"><img id="logo" src="img/tamu.png"></a>
 <?php
 }
 
@@ -90,5 +90,101 @@ function random($mode, $length) {
     for ($i = 0; $i < $length; $i++)
         $result.= $chars[rand(0, strlen($chars) - 1)];
     return $result;
+}
+
+function userExists($username) {
+    $db = database();
+    $statement = $db->prepare("SELECT username FROM aggie_user WHERE username = ?");
+    $statement->execute(array($username));
+
+    if ($statement->rowCount()) {
+        return 1;
+    }
+    return 0;
+}
+
+function addUser($username, $password, $perm = 1) {
+    $db = database();
+    $statement = $db->prepare("INSERT INTO aggie_user (`username`, `password`, `salt`, `enrollment_key`, `joined`, `perm`) VALUES (?,?,?,?,?,?,?)");
+    $salt = random(8, 10);
+    $password = md5(md5($password) . md5($salt));
+    $statement->execute(array($username, $password, $salt, random(7,5), time(), $perm));
+
+    // Add action
+    $user = getUserInfo($username);
+    addAction($user->id, 1);
+}
+
+function extractData($data, $search, $ending, $specific = -1) {
+    $matches = findall($search, $data);
+    foreach ($matches as &$val) {
+        $offset = 0;
+        $val += strlen($search);
+        while (substr($data, $val+$offset, strlen($ending)) != $ending) {
+            $offset++;
+        }
+        $val = substr($data, $val, $offset);
+    }
+    if ($matches == false) {
+        return "Error, no matches found.";
+    }
+
+    if ($specific == -1) {
+        if (count($matches) == 1) {
+            return $matches[0];
+        }
+        return $matches;
+    }
+    return $matches[$specific-1];
+}
+
+// Function I found online
+// Rewrote it to look nicer (so many comments in the last version!)
+function findall($needle, $haystack) { 
+    $buffer = '';
+    $pos = 0;
+    $end = strlen($haystack);
+    $getchar = '';
+    $needlelen = strlen($needle); 
+    $found = array();
+    
+    while ($pos < $end) { 
+        $getchar = substr($haystack, $pos, 1);
+        if ($getchar != "\\n" || $buffer < $needlelen) { 
+            $buffer = $buffer . $getchar;
+            if (strlen($buffer) > $needlelen) { 
+                $buffer = substr($buffer, -$needlelen);
+            }
+            if ($buffer == $needle) { 
+                $found[] = $pos - $needlelen + 1;
+            } 
+        } 
+        $pos++;
+    } 
+    if (array_key_exists(0, $found)) { 
+        return $found;
+    }
+    return false;
+}
+
+function validNetID($first, $last, $id) {
+    $data = file_get_contents("https://services.tamu.edu/directory-search/?branch=people&cn=" . $first . "+" . $last);
+    $results = extractData($data, '<a href="/directory-search/people/', '/">');
+
+    if (!is_array($results)) {
+        $results = array($results);
+    }
+    foreach ($results as $result) {
+        $data = file_get_contents("https://services.tamu.edu/directory-search/people/" . $result . "/");
+        $name = extractData($data, "<th>Name:</th>\n        <td>", "</td>");
+        $netid = extractData($data, "<th>Email Address:</th>\n        <td><a href=\"mailto:", "@");
+        if ($netid != "Error, no matches found.") {
+            $ids[] = $netid;
+        }
+    }
+    if (in_array($id, $ids)) {
+        return 1;
+    }
+    return 0;
 }
 ?>
